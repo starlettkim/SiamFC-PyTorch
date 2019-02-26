@@ -179,8 +179,8 @@ def generate_image_crops(vid_root_path, vid_curated_path):
 
 if __name__ == "__main__":
     # path to your VID dataset
-    vid_root_path = "/home/hfan/Dataset/ILSVRC2015"
-    vid_curated_path = "/home/hfan/Dataset/ILSVRC2015_crops"
+    vid_root_path = "/home/jihunkim/SiamFC-PyTorch/ILSVRC2015_Root"
+    vid_curated_path = "/home/jihunkim/SiamFC-PyTorch/crops"
     if not os.path.exists(vid_curated_path):
         os.mkdir(vid_curated_path)
     generate_image_crops(vid_root_path, vid_curated_path)

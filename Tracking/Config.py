@@ -48,8 +48,8 @@ class Config:
         self.score_size = 17
 
         # path to your trained model
-        self.net_base_path = "/home/hfan/Desktop/PyTorch-SiamFC/Train/model/"
+        self.net_base_path = "/home/jihunkim/SiamFC-PyTorch/Train/model/"
         # path to your sequences (sequence should be in OTB format)
-        self.seq_base_path = "/home/hfan/Desktop/demo-sequences/"
+        self.seq_base_path = "/home/jihunkim/SiamFC-PyTorch/data/"
         # which model to use
         self.net = "SiamFC_50_model.pth"

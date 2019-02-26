@@ -126,6 +126,6 @@ def generate_image_imdb(vid_root_path, vid_curated_path):
 
 
 if __name__ == "__main__":
-    vid_root_path = "/home/hfan/Dataset/ILSVRC2015"
-    vid_curated_path = "/home/hfan/Dataset/ILSVRC2015_crops"
+    vid_root_path = "/home/jihunkim/SiamFC-PyTorch/ILSVRC2015_Root"
+    vid_curated_path = "/home/jihunkim/SiamFC-PyTorch/crops"
     generate_image_imdb(vid_root_path, vid_curated_path)

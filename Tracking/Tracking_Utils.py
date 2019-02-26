@@ -35,7 +35,13 @@ def load_sequence(seq_root_path, seq_name):
     img_list.sort()
     img_list = [os.path.join(img_dir, x) for x in img_list]
 
-    gt = np.loadtxt(gt_path, delimiter=',')
+    try:
+        gt = np.loadtxt(gt_path, delimiter=',')
+    except ValueError:
+        try:
+            gt = np.loadtxt(gt_path, delimiter=' ')
+        except ValueError:
+            gt = np.loadtxt(gt_path, delimiter='\t')
 
     init_bbox = gt[0]
     if seq_name == "Tiger1":
