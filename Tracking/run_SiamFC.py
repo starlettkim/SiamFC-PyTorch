@@ -130,7 +130,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', default='', help='Save output to file')
 
     args = parser.parse_args()
-    assert(args.json == '' or args.output == '')
+    assert(args.json != '' or args.output != '')
     bbox_result = None
     fps = None
 
@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     if args.output != '':
         result = dict()
-        result['res'] = bbox_result
+        result['res'] = bbox_result.tolist()
         result['type'] = 'rect'
         result['fps'] = fps
         json.dump(result, open(args.output, 'w'), indent=2)
