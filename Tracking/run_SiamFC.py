@@ -8,12 +8,14 @@ import cv2
 import datetime
 import torch
 from torch.autograd import Variable
+import argparse
+import json
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # entry to evaluation of SiamFC
-def run_tracker(p):
+def run_tracker(p, img_list, target_position, target_size):
     """
     run tracker, return bounding result and speed
     """
@@ -23,9 +25,6 @@ def run_tracker(p):
 
     # evaluation mode
     net.eval()
-
-    # load sequence
-    img_list, target_position, target_size = load_sequence(p.seq_base_path, p.video)
 
     # first frame
     img_uint8 = cv2.imread(img_list[0])
@@ -124,41 +123,37 @@ def run_tracker(p):
 
 if __name__ == "__main__":
 
-    # get the default parameters
-    p = Config()
+    p = Config()    # get the default parameters
 
-    # choose which model to run
-    p.net = "SiamFC_50_model.pth"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-j', '--json', default='', help='Get input from json')
+    parser.add_argument('-o', '--output', default='', help='Save output to file')
 
-    # choose demo type, single or all
-    demp_type = "all"
+    args = parser.parse_args()
+    assert(args.json == '' or args.output == '')
+    bbox_result = None
+    fps = None
 
-    if demp_type == "single":   # single video demo
-        video = "Lemming"
-        p.video = video
-        print("Processing %s ... " % p.video)
-        bbox_result, fps = run_tracker(p)
-        print("FPS: %d " % fps)
-    else:                       # evaluation the whole OTB benchmark
-        # load all videos
-        all_videos = os.listdir(p.seq_base_path)
+    if args.json != '':
+        param = json.load(open(args.json, 'r'))
+        img_list = param['s_frames']
 
-        if p.bbox_output:
-            if not os.path.exists(p.bbox_output_path):
-                os.makedirs(p.bbox_output_path)
+        init_bbox = param['init_rect']
+        init_x = init_bbox[0]
+        init_y = init_bbox[1]
+        init_w = init_bbox[2]
+        init_h = init_bbox[3]
+        target_position = np.array([init_y + init_h/2, init_x + init_w/2], dtype = np.double)
+        target_size = np.array([init_h, init_w], dtype = np.double)
 
-        fps_all = .0
+        bbox_result, fps = run_tracker(p, img_list, target_position, target_size)
 
-        for video in all_videos:
-            p.video = video
-            print("Processing %s ... " % p.video)
-            bbox_result, fps = run_tracker(p)
-            # fps for this video
-            print("FPS: %d " % fps)
-            # saving tracking results
-            if p.bbox_output:
-                np.savetxt(p.bbox_output_path + p.video.lower() + '_SiamFC.txt', bbox_result, fmt='%.3f')
-            fps_all = fps_all + fps
+    else:
+        exit(1)
 
-        avg_fps = fps_all / len(all_videos)
-        print("Average FPS: %f" % avg_fps)
+    if args.output != '':
+        result = dict()
+        result['res'] = bbox_result
+        result['type'] = 'rect'
+        result['fps'] = fps
+        json.dump(result, open(args.output, 'w'), indent=2)
